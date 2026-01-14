@@ -1,0 +1,26 @@
+{
+    "name": "lipo/migration-64",
+    "description": "Migration profile for Shopware 6.4.20 to 6.7",
+    "type": "shopware-platform-plugin",
+    "license": "proprietary",
+    "version": "1.0.0",
+    "autoload": {
+        "psr-4": {
+            "LipoMigration64\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "LipoMigration64\\LipoMigration64",
+        "label": {
+            "en-GB": "Lipo Migration 6.4",
+            "de-DE": "Lipo Migration 6.4"
+        }
+    },
+    "require": {
+        "shopware/core": "~6.7.0",
+        "swag/migration-assistant": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    }
+}
