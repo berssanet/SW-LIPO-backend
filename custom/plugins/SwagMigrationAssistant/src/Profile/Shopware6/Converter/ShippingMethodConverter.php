@@ -98,9 +98,11 @@ class ShippingMethodConverter extends ShopwareMediaConverter
             $this->updateMediaAssociation($converted['media']);
         }
 
-        if (isset($converted['technicalName'])) {
-            $this->updateTechnicalNameIfNecessary($converted);
+        // technicalName is required in SW 6.7 - generate fallback if missing
+        if (!isset($converted['technicalName']) || $converted['technicalName'] === null || $converted['technicalName'] === '') {
+            $converted['technicalName'] = 'shipping_method_' . substr($data['id'], 0, 8);
         }
+        $this->updateTechnicalNameIfNecessary($converted);
 
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
     }

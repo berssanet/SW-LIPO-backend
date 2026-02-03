@@ -58,7 +58,10 @@ class CategoryConverter extends ShopwareMediaConverter
 
         unset(
             // handled when layouts selected for migration
-            $converted['cmsPageId']
+            $converted['cmsPageId'],
+            // Remove productStreamId to prevent FK constraint violation
+            // Product streams may not exist in target system and are not part of standard migration
+            $converted['productStreamId']
         );
 
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);

@@ -33,6 +33,38 @@ class CustomFieldSetConverter extends ShopwareConverter
             $converted['id']
         );
 
+        // Sanitize field set name (SW 6.7 requirement: letters, numbers, underscores only)
+        if (isset($converted['name'])) {
+            $converted['name'] = $this->sanitizeFieldName($converted['name']);
+        }
+
+        // Sanitize individual custom field names
+        if (isset($converted['customFields']) && is_array($converted['customFields'])) {
+            foreach ($converted['customFields'] as &$field) {
+                if (isset($field['name'])) {
+                    $field['name'] = $this->sanitizeFieldName($field['name']);
+                }
+            }
+            unset($field);
+        }
+
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
+    }
+
+    /**
+     * Sanitize field name to comply with SW 6.7 validation rules
+     * Only letters, numbers, and underscores are allowed, must start with letter or underscore
+     */
+    private function sanitizeFieldName(string $name): string
+    {
+        // Replace invalid characters with underscores
+        $sanitized = preg_replace('/[^a-zA-Z0-9_]/', '_', $name);
+
+        // Ensure starts with letter or underscore (not a number)
+        if ($sanitized !== '' && !preg_match('/^[a-zA-Z_]/', $sanitized)) {
+            $sanitized = '_' . $sanitized;
+        }
+
+        return $sanitized ?: 'custom_field';
     }
 }

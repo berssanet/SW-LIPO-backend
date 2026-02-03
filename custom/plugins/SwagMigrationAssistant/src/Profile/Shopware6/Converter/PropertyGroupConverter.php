@@ -58,8 +58,10 @@ class PropertyGroupConverter extends ShopwareMediaConverter
             DefaultEntities::PROPERTY_GROUP
         );
 
-        foreach (\array_keys($converted['options']) as $key) {
-            $this->convertOption($converted['options'][$key]);
+        if (isset($converted['options'])) {
+            foreach (\array_keys($converted['options']) as $key) {
+                $this->convertOption($converted['options'][$key]);
+            }
         }
 
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);

@@ -205,6 +205,19 @@ class ProductConverter extends ShopwareMediaConverter
             );
         }
 
+        // Remove write-protected fields that may exist in source data (SW 6.7 breaking changes)
+        // These fields appear corrupted/duplicated in source API responses
+        unset(
+            $converted['statesstates'],
+            $converted['states'],
+            $converted['streamIdsstreamIds'],
+            $converted['streamIds'],
+            $converted['categoryIdscategoryIds'],
+            $converted['categoryIds'],
+            $converted['tagIdstagsIds'],
+            $converted['tagIds']
+        );
+
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
     }
 

@@ -35,13 +35,18 @@ abstract class ShopwareMediaConverter extends ShopwareConverter
             );
         }
 
+        // Skip media entries without required file information (orphaned/corrupted records)
+        if (!isset($mediaArray['fileName']) || !isset($mediaArray['url'])) {
+            return;
+        }
+
         $this->mediaFileService->saveMediaFile(
             [
                 'runId' => $this->runId,
                 'entity' => $entity ?? DefaultEntities::MEDIA,
                 'uri' => $mediaArray['url'],
                 'fileName' => $mediaArray['fileName'],
-                'fileSize' => (int) $mediaArray['fileSize'],
+                'fileSize' => (int) ($mediaArray['fileSize'] ?? 0),
                 'mediaId' => $mediaArray['id'],
             ]
         );
