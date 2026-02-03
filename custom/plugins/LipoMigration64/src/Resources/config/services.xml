@@ -4,65 +4,38 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
-        <!-- Profile -->
+        <!-- 
+            Shopware 6.4.20 Migration Profile
+            
+            By implementing Shopware6ProfileInterface, this profile automatically uses:
+            - Shopware6ApiGateway (API-based migration)
+            - All existing Shopware 6 API Readers (product, customer, order, etc.)
+            - All existing Shopware 6 Converters
+            - All existing Shopware 6 DataSets and DataSelections
+            
+            REQUIREMENT: The source Shopware 6.4.20 must have the 
+            "Migration Connector" plugin installed and configured.
+        -->
         <service id="LipoMigration64\Profile\Shopware64\Shopware64Profile">
             <tag name="shopware.migration.profile"/>
         </service>
 
         <!-- 
-            NOTE: We do NOT register a custom gateway.
-            By implementing ShopwareProfileInterface, our profile uses the existing
-            ShopwareLocalGateway which provides the database credentials form.
+            Custom Gateway that ALLOWS migration between different major versions (6.4 -> 6.7)
+            This decorates the original Shopware6ApiGateway.
+            
+            The key difference: we do NOT set migrationDisabled=true when versions don't match.
         -->
-
-        <!-- ==================== PRODUCTS ==================== -->
-
-        <!-- Product DataSelection -->
-        <service id="LipoMigration64\Profile\Shopware64\DataSelection\ProductDataSelection">
-            <tag name="shopware.migration.data_selection"/>
-        </service>
-
-        <!-- Product DataSet -->
-        <service id="LipoMigration64\Profile\Shopware64\DataSelection\DataSet\ProductDataSet">
-            <tag name="shopware.migration.data_set"/>
-        </service>
-
-        <!-- Product Reader -->
-        <service id="LipoMigration64\Profile\Shopware64\Gateway\Reader\ProductReader"
-                 parent="SwagMigrationAssistant\Profile\Shopware\Gateway\Local\Reader\AbstractReader">
-            <tag name="shopware.migration.reader"/>
-        </service>
-
-        <!-- Product Converter -->
-        <service id="LipoMigration64\Profile\Shopware64\Converter\ProductConverter">
-            <argument type="service" id="SwagMigrationAssistant\Migration\Mapping\MappingService"/>
-            <argument type="service" id="SwagMigrationAssistant\Migration\Logging\LoggingService"/>
-            <tag name="shopware.migration.converter"/>
-        </service>
-
-        <!-- ==================== CUSTOMERS ==================== -->
-
-        <!-- Customer DataSelection -->
-        <service id="LipoMigration64\Profile\Shopware64\DataSelection\CustomerDataSelection">
-            <tag name="shopware.migration.data_selection"/>
-        </service>
-
-        <!-- Customer DataSet -->
-        <service id="LipoMigration64\Profile\Shopware64\DataSelection\DataSet\CustomerDataSet">
-            <tag name="shopware.migration.data_set"/>
-        </service>
-
-        <!-- Customer Reader -->
-        <service id="LipoMigration64\Profile\Shopware64\Gateway\Reader\CustomerReader"
-                 parent="SwagMigrationAssistant\Profile\Shopware\Gateway\Local\Reader\AbstractReader">
-            <tag name="shopware.migration.reader"/>
-        </service>
-
-        <!-- Customer Converter -->
-        <service id="LipoMigration64\Profile\Shopware64\Converter\CustomerConverter">
-            <argument type="service" id="SwagMigrationAssistant\Migration\Mapping\MappingService"/>
-            <argument type="service" id="SwagMigrationAssistant\Migration\Logging\LoggingService"/>
-            <tag name="shopware.migration.converter"/>
+        <service id="LipoMigration64\Profile\Shopware64\Gateway\Api\Shopware64ApiGateway"
+                 decorates="SwagMigrationAssistant\Profile\Shopware6\Gateway\Api\Shopware6ApiGateway"
+                 decoration-priority="10">
+            <argument type="service" id="SwagMigrationAssistant\Migration\Gateway\Reader\ReaderRegistry"/>
+            <argument type="service" id="SwagMigrationAssistant\Profile\Shopware6\Gateway\Api\Reader\EnvironmentReader"/>
+            <argument type="service" id="currency.repository"/>
+            <argument type="service" id="language.repository"/>
+            <argument type="service" id="SwagMigrationAssistant\Profile\Shopware6\Gateway\Api\Reader\TotalReader"/>
+            <argument type="service" id="SwagMigrationAssistant\Profile\Shopware6\Gateway\Api\Reader\TableReader"/>
+            <argument>%kernel.shopware_version%</argument>
         </service>
     </services>
 </container>
