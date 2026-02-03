@@ -62,6 +62,38 @@ class SalutationConverter extends ShopwareConverter
             DefaultEntities::SALUTATION
         );
 
+        // letterName is required non-null in SW 6.7 - generate fallback if missing
+        // Ultimate fallback pattern to guarantee non-empty letterName
+        if (isset($converted['translations']) && is_array($converted['translations'])) {
+            foreach ($converted['translations'] as &$translation) {
+                $letterName = $translation['letterName'] ?? null;
+
+                // Check if letterName is empty, null, or whitespace-only
+                if ($letterName === null || !is_string($letterName) || trim($letterName) === '') {
+                    // Fallback 1: Use displayName from same translation
+                    $fallback = $translation['displayName'] ?? null;
+
+                    // Fallback 2: Use salutationKey from source data
+                    if ($fallback === null || !is_string($fallback) || trim($fallback) === '') {
+                        $fallback = $data['salutationKey'] ?? null;
+                    }
+
+                    // Fallback 3: Use converted salutationKey
+                    if ($fallback === null || !is_string($fallback) || trim($fallback) === '') {
+                        $fallback = $converted['salutationKey'] ?? null;
+                    }
+
+                    // Ultimate fallback: Generic greeting
+                    if ($fallback === null || !is_string($fallback) || trim($fallback) === '') {
+                        $fallback = 'Dear Sir/Madam';
+                    }
+
+                    $translation['letterName'] = trim($fallback);
+                }
+            }
+            unset($translation);
+        }
+
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
     }
 }

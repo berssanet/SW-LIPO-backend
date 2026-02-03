@@ -17,6 +17,17 @@ use SwagMigrationAssistant\Profile\Shopware6\Shopware6MajorProfile;
 #[Package('fundamentals@after-sales')]
 class RuleConverter extends ShopwareConverter
 {
+    /**
+     * Condition types removed in Shopware 6.7 that must be filtered out
+     */
+    private const OBSOLETE_CONDITION_TYPES = [
+        'cartLineItemDelivery',
+        'cartLineItemDeliveryFlag',
+        'cartLineItemsDeliveryInCartCount',
+        'cartLineItemsDeliveryFlagInCartCount',
+        'cartLineItemHasPromotion',
+    ];
+
     public function supports(MigrationContextInterface $migrationContext): bool
     {
         return $migrationContext->getProfile()->getName() === Shopware6MajorProfile::PROFILE_NAME
@@ -34,6 +45,12 @@ class RuleConverter extends ShopwareConverter
         );
 
         if (isset($converted['conditions'])) {
+            // Filter out condition types that were removed in SW 6.7
+            $converted['conditions'] = array_values(array_filter(
+                $converted['conditions'],
+                fn(array $c) => !isset($c['type']) || !in_array($c['type'], self::OBSOLETE_CONDITION_TYPES, true)
+            ));
+
             foreach ($converted['conditions'] as &$condition) {
                 if (isset($condition['type']) && $condition['type'] === 'alwaysValid') {
                     unset($condition['value']);
@@ -79,6 +96,11 @@ class RuleConverter extends ShopwareConverter
                     if (!empty($newCurrencies)) {
                         $condition['value']['countryIds'] = $newCurrencies;
                     }
+                }
+
+                // Remove 'type' from value - not allowed in SW 6.7
+                if (isset($condition['value']['type'])) {
+                    unset($condition['value']['type']);
                 }
             }
 

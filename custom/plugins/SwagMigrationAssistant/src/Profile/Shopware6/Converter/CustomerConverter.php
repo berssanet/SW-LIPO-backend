@@ -56,6 +56,61 @@ class CustomerConverter extends ShopwareConverter
             $converted['updatedById'] = $this->getMappingIdFacade(DefaultEntities::USER, $data['updatedById']);
         }
 
+        // Fix invalid birthday dates (e.g., '-0001-11-30', years < 1900 or > 2100)
+        if (isset($converted['birthday'])) {
+            $birthday = (string) $converted['birthday'];
+            // Extract year from ISO format (YYYY-MM-DD)
+            if (preg_match('/^(-?\d{4})/', $birthday, $matches)) {
+                $year = (int) $matches[1];
+                if ($year < 1900 || $year > 2100) {
+                    unset($converted['birthday']);
+                }
+            } else {
+                // Invalid format, remove it
+                unset($converted['birthday']);
+            }
+        }
+
+        // Fix empty street and city in addresses (required fields in SW 6.7)
+        if (isset($converted['addresses']) && is_array($converted['addresses'])) {
+            foreach ($converted['addresses'] as &$address) {
+                if (!isset($address['street']) || trim((string) $address['street']) === '') {
+                    $address['street'] = '-';
+                }
+                if (!isset($address['city']) || trim((string) $address['city']) === '') {
+                    $address['city'] = '-';
+                }
+            }
+            unset($address);
+        }
+
+        // Fix letterName in nested salutations (SW 6.7 requirement)
+        $this->fixSalutationLetterName($converted);
+
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
+    }
+
+    /**
+     * Removes nested salutation objects and ensures only salutationId is kept.
+     * This prevents DAL nested writes that fail due to missing letterName in SW 6.7.
+     *
+     * @param array<string, mixed> $converted
+     */
+    private function fixSalutationLetterName(array &$converted): void
+    {
+        // Remove main customer salutation object, keep only salutationId
+        if (isset($converted['salutation'])) {
+            unset($converted['salutation']);
+        }
+
+        // Remove salutation objects from addresses, keep only salutationId
+        if (isset($converted['addresses']) && is_array($converted['addresses'])) {
+            foreach ($converted['addresses'] as &$address) {
+                if (isset($address['salutation'])) {
+                    unset($address['salutation']);
+                }
+            }
+            unset($address);
+        }
     }
 }

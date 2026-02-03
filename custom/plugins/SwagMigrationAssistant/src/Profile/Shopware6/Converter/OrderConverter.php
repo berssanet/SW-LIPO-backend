@@ -161,7 +161,78 @@ class OrderConverter extends ShopwareConverter
             $converted['updatedById'] = $this->getMappingIdFacade(DefaultEntities::USER, $data['updatedById']);
         }
 
+        // Fix empty street/city in order addresses (required fields in SW 6.7)
+        if (isset($converted['addresses']) && is_array($converted['addresses'])) {
+            foreach ($converted['addresses'] as &$address) {
+                if (!isset($address['street']) || trim((string) $address['street']) === '') {
+                    $address['street'] = '-';
+                }
+                if (!isset($address['city']) || trim((string) $address['city']) === '') {
+                    $address['city'] = '-';
+                }
+            }
+            unset($address);
+        }
+
+        // Fix empty street/city in delivery shipping addresses
+        if (isset($converted['deliveries']) && is_array($converted['deliveries'])) {
+            foreach ($converted['deliveries'] as &$delivery) {
+                if (isset($delivery['shippingOrderAddress'])) {
+                    if (!isset($delivery['shippingOrderAddress']['street']) || trim((string) $delivery['shippingOrderAddress']['street']) === '') {
+                        $delivery['shippingOrderAddress']['street'] = '-';
+                    }
+                    if (!isset($delivery['shippingOrderAddress']['city']) || trim((string) $delivery['shippingOrderAddress']['city']) === '') {
+                        $delivery['shippingOrderAddress']['city'] = '-';
+                    }
+                }
+            }
+            unset($delivery);
+        }
+
+        // Fix letterName in nested salutations (SW 6.7 requirement)
+        $this->fixSalutationLetterName($converted);
+
         return new ConvertStruct($converted, null, $this->mainMapping['id'] ?? null);
+    }
+
+    /**
+     * Removes nested salutation objects and ensures only salutationId is kept.
+     * This prevents DAL nested writes that fail due to missing letterName in SW 6.7.
+     * The salutation entity should already exist from the salutation migration step.
+     *
+     * @param array<string, mixed> $converted
+     */
+    private function fixSalutationLetterName(array &$converted): void
+    {
+        // Remove orderCustomer salutation object, keep only salutationId
+        if (isset($converted['orderCustomer']['salutation'])) {
+            unset($converted['orderCustomer']['salutation']);
+        }
+
+        // Remove salutation objects from addresses, keep only salutationId
+        if (isset($converted['addresses']) && is_array($converted['addresses'])) {
+            foreach ($converted['addresses'] as &$address) {
+                if (isset($address['salutation'])) {
+                    unset($address['salutation']);
+                }
+            }
+            unset($address);
+        }
+
+        // Remove salutation objects from deliveries, keep only salutationId
+        if (isset($converted['deliveries']) && is_array($converted['deliveries'])) {
+            foreach ($converted['deliveries'] as &$delivery) {
+                if (isset($delivery['shippingOrderAddress']['salutation'])) {
+                    unset($delivery['shippingOrderAddress']['salutation']);
+                }
+            }
+            unset($delivery);
+        }
+
+        // Remove salutation from billingAddress if present
+        if (isset($converted['billingAddress']['salutation'])) {
+            unset($converted['billingAddress']['salutation']);
+        }
     }
 
     /**
@@ -172,6 +243,19 @@ class OrderConverter extends ShopwareConverter
         foreach ($lineItems as &$converted) {
             if (!isset($converted['productId'])) {
                 unset($converted['referencedId'], $converted['payload']['productNumber']);
+            }
+
+            // Clear promotionId if not mapped (prevents FK violation)
+            if (isset($converted['promotionId'])) {
+                $promotionId = $this->getMappingIdFacade(
+                    DefaultEntities::PROMOTION,
+                    $converted['promotionId']
+                );
+                if ($promotionId === null) {
+                    unset($converted['promotionId']);
+                } else {
+                    $converted['promotionId'] = $promotionId;
+                }
             }
 
             if (!isset($converted['payload'])) {
