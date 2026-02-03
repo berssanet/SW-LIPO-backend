@@ -80,6 +80,9 @@ class CustomerConverter extends Converter
         $converted = $this->convertAddresses($converted, $data);
         $converted = $this->convertCustomFields($converted, $data);
 
+        // Fix letterName in nested salutations (SW 6.7 requirement)
+        $this->fixSalutationLetterName($converted);
+
         // Remove processed fields from source data
         $unmappedData = $this->getUnmappedData($data);
 
@@ -437,4 +440,56 @@ class CustomerConverter extends Converter
 
         return array_diff_key($data, array_flip($processedFields));
     }
+
+    /**
+     * Ensures letterName is set in all salutation translations (required in SW 6.7)
+     *
+     * @param array<string, mixed> $converted
+     */
+    private function fixSalutationLetterName(array &$converted): void
+    {
+        // Fix main customer salutation
+        if (isset($converted['salutation']['translations'])) {
+            $this->fillLetterNameInTranslations(
+                $converted['salutation']['translations'],
+                $converted['salutation']['salutationKey'] ?? ''
+            );
+        }
+
+        // Fix salutations in addresses
+        if (isset($converted['addresses'])) {
+            foreach ($converted['addresses'] as &$address) {
+                if (isset($address['salutation']['translations'])) {
+                    $this->fillLetterNameInTranslations(
+                        $address['salutation']['translations'],
+                        $address['salutation']['salutationKey'] ?? ''
+                    );
+                }
+            }
+            unset($address);
+        }
+    }
+
+    /**
+     * Fill letterName in translations with fallback values
+     *
+     * @param array<string, array<string, mixed>> $translations
+     */
+    private function fillLetterNameInTranslations(array &$translations, string $fallbackKey): void
+    {
+        foreach ($translations as &$translation) {
+            if (!isset($translation['letterName']) || $translation['letterName'] === null || trim((string) $translation['letterName']) === '') {
+                $fallback = $translation['displayName'] ?? null;
+                if ($fallback === null || trim((string) $fallback) === '') {
+                    $fallback = $fallbackKey;
+                }
+                if (trim((string) $fallback) === '') {
+                    $fallback = 'Dear Sir/Madam';
+                }
+                $translation['letterName'] = $fallback;
+            }
+        }
+        unset($translation);
+    }
 }
+
