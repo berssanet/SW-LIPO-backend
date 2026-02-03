@@ -1,0 +1,9 @@
+{
+    "pages": [
+        {
+            "path": "/datatrans/payment/_datatransTrxId",
+            "file": "datatransPaymentPage"
+        }
+    ],
+    "settings": {}
+}

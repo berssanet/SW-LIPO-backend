@@ -1,0 +1,101 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <!-- Config Services -->
+        <service id="Allquanto\Datatrans\Config\DatatransPluginConfigService">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+        </service>
+
+        <!-- Transaction Service -->
+        <service id="Allquanto\Datatrans\Service\DatatransOrderTransactionService">
+            <argument type="service" id="order_transaction.repository"/>
+        </service>
+
+        <!-- API Client Factory -->
+        <service id="Allquanto\Datatrans\DatatransApi\DatatransClientFactory">
+            <argument type="service" id="Allquanto\Datatrans\Config\DatatransPluginConfigService"/>
+            <argument type="service" id="logger"/>
+            <argument type="service" id="router"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- Abstract Payment Handler -->
+        <service id="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler" abstract="true">
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Allquanto\Datatrans\Service\DatatransOrderTransactionService"/>
+            <argument type="service" id="Allquanto\Datatrans\DatatransApi\DatatransClientFactory"/>
+            <argument type="service" id="order_transaction.repository"/>
+        </service>
+
+        <!-- Payment Method Handlers -->
+        <service id="Allquanto\Datatrans\Handlers\LipoCardPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\CardsPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\PostFinancePaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\TwintPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\PayPalPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\PowerpayPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Handlers\CembrapayPaymentMethodHandler"
+                 parent="Allquanto\Datatrans\Handlers\AbstractPaymentMethodHandler">
+            <tag name="shopware.payment.method.async"/>
+        </service>
+
+        <!-- Storefront -->
+        <service id="Allquanto\Datatrans\Storefront\Page\Payment\PaymentPageLoader" public="true">
+            <argument type="service" id="Shopware\Storefront\Page\GenericPageLoader"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+
+        <service id="Allquanto\Datatrans\Storefront\Controller\PaymentController" public="true">
+            <argument type="service" id="Allquanto\Datatrans\Storefront\Page\Payment\PaymentPageLoader"/>
+            <call method="setContainer">
+                <argument type="service" id="service_container"/>
+            </call>
+            <call method="setTwig">
+                <argument type="service" id="twig"/>
+            </call>
+        </service>
+
+        <!-- Webhook Controller -->
+        <service id="Allquanto\Datatrans\Webhook\DatatransWebhookController" public="true">
+            <argument type="service" id="Allquanto\Datatrans\Config\DatatransPluginConfigService"/>
+            <argument type="service" id="Shopware\Core\Checkout\Order\Aggregate\OrderTransaction\OrderTransactionStateHandler"/>
+            <argument type="service" id="Allquanto\Datatrans\Service\DatatransOrderTransactionService"/>
+            <argument type="service" id="logger"/>
+        </service>
+
+        <!-- Event Subscriber -->
+        <service id="Allquanto\Datatrans\Subscriber\CustomerSubscriber">
+            <argument type="service" id="language.repository"/>
+            <tag name="kernel.event_subscriber"/>
+        </service>
+
+    </services>
+</container>

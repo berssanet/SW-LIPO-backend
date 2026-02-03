@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/trunk/src/Core/System/SystemConfig/Schema/config.xsd">
+
+    <card>
+        <title>Basic Configuration</title>
+        <title lang="de-DE">Grundeinstellungen</title>
+        <input-field>
+            <name>datatransMerchantId</name>
+            <copyable>true</copyable>
+            <label>Merchant-ID</label>
+            <label lang="de-DE">Merchant-ID</label>
+            <placeholder>1100001337</placeholder>
+            <placeholder lang="de-DE">1100001337</placeholder>
+            <helpText>This is your merchant account identifier which is assigned when creating an account at Datatrans. The merchantId is also your username for basicAuth.</helpText>
+            <helpText lang="de-DE">Dies ist Ihre Händlerkontokennung, die bei der Erstellung eines Kontos bei Datatrans vergeben wird. Die MerchantId ist auch Ihr Benutzername für basicAuth.</helpText>
+        </input-field>
+        <input-field>
+            <name>datatransPassword</name>
+            <copyable>true</copyable>
+            <label>Password</label>
+            <label lang="de-DE">Password</label>
+            <helpText>This would be your password required for basicAuth.</helpText>
+            <helpText lang="de-DE">Dies wäre Ihr Passwort, das für basicAuth erforderlich ist.</helpText>
+        </input-field>
+        <input-field>
+            <name>datatransSign</name>
+            <copyable>true</copyable>
+            <label>Security signature</label>
+            <label lang="de-DE">Sicherheit</label>
+            <helpText>To protect our webhooks from being tampered, add an additional security layer by signing our webhooks. To get your HMAC key sign, login to our dashboard and navigate to the Security settings in your merchant configuration. Datatrans will use this key to calculate a signature. Once the checkbox is active, we will generate a new HMAC key and add two parameters within the HTTP request header Datatrans-Signature: A unique timestamp t and the expected signature s0.</helpText>
+            <helpText lang="de-DE">Um unsere Webhooks vor Manipulationen zu schützen, fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie unsere Webhooks signieren. Um Ihr HMAC-Schlüsselzeichen zu erhalten, melden Sie sich bei unserem Dashboard an und navigieren Sie zu den Sicherheitseinstellungen in Ihrer Händlerkonfiguration. Datatrans verwendet diesen Schlüssel, um eine Signatur zu berechnen. Sobald das Kontrollkästchen aktiviert ist, generieren wir einen neuen HMAC-Schlüssel und fügen zwei Parameter innerhalb des HTTP-Anforderungsheaders Datatrans-Signature hinzu: Einen eindeutigen Zeitstempel t und die erwartete Signatur s0.</helpText>
+        </input-field>
+        <input-field>
+            <name>datatransSign2</name>
+            <copyable>true</copyable>
+            <label>Security signature 2</label>
+            <label lang="de-DE">Sicherheit 2</label>
+            <helpText>Use another key for sign2.</helpText>
+            <helpText lang="de-DE">Einen anderen Schlüssel für sign2</helpText>
+        </input-field>
+    </card>
+
+    <card>
+        <title>Datatras Service URLs</title>
+        <title lang="de-DE">Service URLs</title>
+        <input-field>
+            <name>datatransRedirectUrl</name>
+            <copyable>true</copyable>
+            <label>Payment pages</label>
+            <label lang="de-DE">Zahlungsseiten</label>
+            <placeholder>https://pay.sandbox.datatrans.com</placeholder>
+            <placeholder lang="de-DE">https://pay.sandbox.datatrans.com</placeholder>
+            <helpText>URL used for redirect your customers to our payment pages.</helpText>
+            <helpText lang="de-DE">URL, die verwendet wird, um Ihre Kunden auf unsere Zahlungsseiten umzuleiten.</helpText>
+        </input-field>
+        <input-field>
+            <name>datatransApiBaseUrl</name>
+            <copyable>true</copyable>
+            <label>Server to server APIs</label>
+            <label lang="de-DE">Server to server APIs</label>
+            <placeholder>https://api.sandbox.datatrans.com</placeholder>
+            <placeholder lang="de-DE">https://api.sandbox.datatrans.com</placeholder>
+            <helpText>URL used for communication between Shopware and Datatrans.</helpText>
+            <helpText lang="de-DE">URL, die für die Kommunikation zwischen Shopware und Datatrans verwendet wird</helpText>
+        </input-field>
+        <input-field>
+            <name>datatransWebhookBaseUrl</name>
+            <copyable>true</copyable>
+            <label>Webhook Base Url</label>
+            <label lang="de-DE">Webhook Base Url</label>
+            <placeholder>https://your-store-url.com</placeholder>
+            <placeholder lang="de-DE">https://your-store-url.com</placeholder>
+            <helpText>URL by which the Datatrans system will inform the payment status</helpText>
+            <helpText lang="de-DE">URL, über die das Datatrans-System den Zahlungsstatus informiert</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>LIPO Mastercard</title>
+        <title lang="de-DE">LIPO Mastercard</title>
+        <input-field type="single-select">
+            <name>datatransLipoCardPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransLipoCardBrands</name>
+            <options>
+                <option>
+                    <id>ECA</id>
+                    <name>MasterCard</name>
+                    <name lang="de-DE">MasterCard</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["ECA"]
+            </defaultValue>
+            <label>Card brands</label>
+            <label lang="de-DE">Kartenmarken</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Credit card configuration</title>
+        <title lang="de-DE">Kreditkartenkonfiguration</title>
+        <input-field type="single-select">
+            <name>datatransCardPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransCardBrands</name>
+            <options>
+                <option>
+                    <id>ECA</id>
+                    <name>MasterCard</name>
+                    <name lang="de-DE">MasterCard</name>
+                </option>
+                <option>
+                    <id>VIS</id>
+                    <name>Visa</name>
+                    <name lang="de-DE">Visa</name>
+                </option>
+                <option>
+                    <id>AMX</id>
+                    <name>American Express</name>
+                    <name lang="de-DE">American Express</name>
+                </option>
+                <option>
+                    <id>CUP</id>
+                    <name>China Union Pay</name>
+                    <name lang="de-DE">China Union Pay</name>
+                </option>
+                <option>
+                    <id>DIN</id>
+                    <name>Diners Club</name>
+                    <name lang="de-DE">Diners Club</name>
+                </option>
+                <option>
+                    <id>DIS</id>
+                    <name>Discover</name>
+                    <name lang="de-DE">Discover</name>
+                </option>
+                <option>
+                    <id>JCB</id>
+                    <name>JCB</name>
+                    <name lang="de-DE">JCB</name>
+                </option>
+                <option>
+                    <id>MAU</id>
+                    <name>Maestro</name>
+                    <name lang="de-DE">Maestro</name>
+                </option>
+                <option>
+                    <id>DNK</id>
+                    <name>Dankort</name>
+                    <name lang="de-DE">Dankort</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["ECA", "VIS", "AMX", "CUP", "DIN", "DIS", "JCB", "MAU", "DNK"]
+            </defaultValue>
+            <label>Card brands</label>
+            <label lang="de-DE">Kartenmarken</label>
+        </input-field>
+    </card>
+    <card>
+        <title>PostFinance</title>
+        <title lang="de-DE">PostFinance</title>
+        <input-field type="single-select">
+            <name>datatransPostFinancePaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransPostFinanceCodes</name>
+            <options>
+                <option>
+                    <id>PFC</id>
+                    <name>PostFinance Card</name>
+                    <name lang="de-DE">PostFinance Card</name>
+                </option>
+                <option>
+                    <id>PEF</id>
+                    <name>PostFinance E-Finance</name>
+                    <name lang="de-DE">PostFinance E-Finance</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["PFC", "PEF"]
+            </defaultValue>
+            <label>PostFinance Codes</label>
+            <label lang="de-DE">PostFinance Codes</label>
+        </input-field>
+    </card>
+    <card>
+        <title>TWINT</title>
+        <title lang="de-DE">TWINT</title>
+        <input-field type="single-select">
+            <name>datatransTwintPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransTwintCodes</name>
+            <options>
+                <option>
+                    <id>TWI</id>
+                    <name>Twint</name>
+                    <name lang="de-DE">Twint</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["TWI"]
+            </defaultValue>
+            <label>Twint Codes</label>
+            <label lang="de-DE">Twint Codes</label>
+        </input-field>
+    </card>
+    <card>
+        <title>PayPal</title>
+        <title lang="de-DE">PayPal</title>
+        <input-field type="single-select">
+            <name>datatransPayPalPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransPayPalCodes</name>
+            <options>
+                <option>
+                    <id>PAP</id>
+                    <name>PayPal</name>
+                    <name lang="de-DE">PayPal</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["PAP"]
+            </defaultValue>
+            <label>PayPal Codes</label>
+            <label lang="de-DE">PayPal Codes</label>
+        </input-field>
+    </card>
+    <card>
+        <title>Powerpay</title>
+        <title lang="de-DE">Powerpay</title>
+        <input-field type="single-select">
+            <name>datatransPowerpayPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>lightbox</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransPowerpayCodes</name>
+            <options>
+                <option>
+                    <id>MFX</id>
+                    <name>Powerpay</name>
+                    <name lang="de-DE">Powerpay</name>
+                </option>
+                <option>
+                    <id>MFG</id>
+                    <name>Powerpay Authorization</name>
+                    <name lang="de-DE">Powerpay Authorization</name>
+                </option>
+                <option>
+                    <id>MFA</id>
+                    <name>Powerpay Credit Check</name>
+                    <name lang="de-DE">Powerpay Credit Check</name>
+                </option>
+                <option>
+                    <id>MPX</id>
+                    <name>Paycard</name>
+                    <name lang="de-DE">Paycard</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["MFX", "MFG", "MFA", "MPX"]
+            </defaultValue>
+            <label>Powerpay Codes</label>
+            <label lang="de-DE">Powerpay Codes</label>
+        </input-field>
+    </card>
+    <card>
+        <title>CembraPay</title>
+        <title lang="de-DE">CembraPay</title>
+        <input-field type="single-select">
+            <name>datatransCembrapayPaymentType</name>
+            <options>
+                <option>
+                    <id>lightbox</id>
+                    <name>Lightbox</name>
+                    <name lang="de-DE">Lightbox</name>
+                </option>
+                <option>
+                    <id>redirect</id>
+                    <name>Redirect</name>
+                    <name lang="de-DE">Redirect</name>
+                </option>
+            </options>
+            <defaultValue>redirect</defaultValue>
+            <label>Integrations</label>
+            <label lang="de-DE">Integrationen</label>
+        </input-field>
+        <input-field type="multi-select">
+            <name>datatransCembrapayCodes</name>
+            <options>
+                <option>
+                    <id>INT</id>
+                    <name>CembraPay</name>
+                    <name lang="de-DE">CembraPay</name>
+                </option>
+            </options>
+            <defaultValue>
+                ["INT"]
+            </defaultValue>
+            <label>CembraPay Codes</label>
+            <label lang="de-DE">CembraPay Codes</label>
+        </input-field>
+    </card>
+
+</config>
