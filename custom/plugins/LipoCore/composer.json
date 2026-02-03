@@ -1,0 +1,27 @@
+{
+  "name": "lipo/lipo-core",
+  "description": "Lipo CORE by Allquanto",
+  "version": "1.0.0",
+  "type": "shopware-platform-plugin",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "LipoCore\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Allquanto"
+    }
+  ],
+  "require": {
+    "shopware/core": "^6.7"
+  },
+  "extra": {
+    "shopware-plugin-class": "LipoCore\\LipoCore",
+    "label": {
+      "de-DE": "Lipo CORE",
+      "en-GB": "Lipo CORE"
+    }
+  }
+}

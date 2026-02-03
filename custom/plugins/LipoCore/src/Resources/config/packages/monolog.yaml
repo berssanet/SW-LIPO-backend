@@ -1,0 +1,8 @@
+monolog:
+    channels: ['lipo_admin_api']
+    handlers:
+        lipo_admin_api:
+            type: stream
+            path: "%kernel.logs_dir%/%kernel.environment%-lipo_admin_api.log"
+            level: debug
+            channels: [ "lipo_admin_api" ]
